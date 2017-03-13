@@ -21,8 +21,8 @@
 @property(nonatomic, strong) NSData *fileData;
 
 @end
-BOOL *onPhoto=NO;
-BOOL *isConnected=NO;
+BOOL *onPhoto=0;
+BOOL *isConnected;
 @implementation ViewController
     NSString *IP =@"192.168.1.110";
 //  NSString *IP =@"192.168.31.249";
@@ -32,6 +32,7 @@ BOOL *isConnected=NO;
     int port =3344;
 - (void)viewDidLoad {
     [super viewDidLoad];
+    isConnected=0;
     //连接服务器
     
     _clinetSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
@@ -76,7 +77,6 @@ BOOL *isConnected=NO;
         default:
             break;
     }
-    [self.imagePicker takePicture];
     [self.clinetSocket readDataWithTimeout:-1 tag:0];
 }
 
@@ -87,17 +87,22 @@ BOOL *isConnected=NO;
 //开始连接
 - (IBAction)connectAction:(id)sender {
     //2、连接服务器
-    NSLog(@"连接服务器");
+   
     NSError *error = nil;
     if (isConnected) {
-        [self showMessageWithStr:@"已成功连接 "];
+        [self showMessageWithStr:@"已成功连接0"];
 
+    }else{
+        BOOL result = [_clinetSocket connectToHost:IP onPort:port withTimeout:-1 error:&error];
+        if (result) {
+            [self showMessageWithStr:@"已成功连接1"];
+            isConnected = 1;
+        }else{
+            isConnected = 0;
+             NSLog(@"连接错误：%@",error);
+        }
     }
-    [_clinetSocket connectToHost:IP onPort:port withTimeout:-1 error:&error];
-    if (error) {
-        NSLog(@"错误：%@",error);
-    }
-    
+   
 }
 - (void)ready{
 
