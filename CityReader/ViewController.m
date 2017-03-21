@@ -10,36 +10,61 @@
 #import "AFNetworking.h"
 #import "AFHTTPSessionManager.h"
 #import "GCDAsyncSocket.h"
+#import "YYKit.h"
 
 @interface ViewController ()
 //客户端socket
+@property (weak, nonatomic) IBOutlet UITextField *ipTF;
+@property (weak, nonatomic) IBOutlet UIButton *addBtn;
 
+@property (weak, nonatomic) IBOutlet UIButton *subBtn;
+@property (weak, nonatomic) IBOutlet UILabel *channelLab;
 @property (weak, nonatomic) IBOutlet UITextView *messageTF;
 @property (nonatomic) GCDAsyncSocket *clinetSocket;
-@property (weak, nonatomic) IBOutlet UITextField *channelTF;
+
 @property (nonatomic, retain) UIImagePickerController *imagePicker;
+@property (weak, nonatomic) IBOutlet UIButton *startBtn;
 @property(nonatomic, strong) NSData *fileData;
 
 @end
 BOOL *onPhoto=0;
 BOOL *isConnected;
+NSString *IP;
+int i ;
 @implementation ViewController
-    NSString *IP =@"192.168.1.110";
-//  NSString *IP =@"192.168.31.249";
-
-    NSString *upLoadImg_url =@"/city/imgSave.php";
+    NSString *upLoadImg_url =@":50099/upload.html";
     NSString *channel;
     int port =3344;
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self initAPP];
+    
+}
+-(void)initAPP{
     isConnected=0;
+    i =arc4random() % 50;
+    [self showMessageWithStr:@"请确保和服务端电脑在同一网络"];
     //连接服务器
-    
+    _channelLab.clipsToBounds=YES;
+    _channelLab.layer.cornerRadius=75;
+    _startBtn.clipsToBounds=YES;
+    _startBtn.layer.cornerRadius=75;
+    _channelLab.text= [[NSString alloc] initWithFormat:@"%d",i];
     _clinetSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
-
     
-
+}
+- (IBAction)subClick:(id)sender {
+    if (i>1) {
+        i--;
+      _channelLab.text= [[NSString alloc] initWithFormat:@"%d",i];
+    }
     
+}
+- (IBAction)addClick:(id)sender {
+    if(i<66){
+      i++;
+    _channelLab.text= [[NSString alloc] initWithFormat:@"%d",i];
+    }
     
 }
 
@@ -52,8 +77,11 @@ BOOL *isConnected;
 - (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port{
     NSData *welcome =[@"hello sever!" dataUsingEncoding:NSUTF8StringEncoding];
     [_clinetSocket writeData:welcome withTimeout:1000 tag:1];
+    [self showMessageWithStr:@"已成功连接"];
+    isConnected = 1;
+    [_startBtn setBackgroundColor:[UIColor orangeColor]];
+    _startBtn.titleLabel.text=@"断开";
 
-    [self showMessageWithStr:@"链接成功"];
     [self showMessageWithStr:[NSString stringWithFormat:@"服务器IP ： %@", host]];
     [self.clinetSocket readDataWithTimeout:-1 tag:0];
 }
@@ -87,21 +115,20 @@ BOOL *isConnected;
 //开始连接
 - (IBAction)connectAction:(id)sender {
     //2、连接服务器
-   
+   IP = _ipTF.text;
     NSError *error = nil;
     if (isConnected) {
-        [self showMessageWithStr:@"已成功连接0"];
-
-    }else{
-        BOOL result = [_clinetSocket connectToHost:IP onPort:port withTimeout:-1 error:&error];
-        if (result) {
-            [self showMessageWithStr:@"已成功连接1"];
-            isConnected = 1;
-        }else{
-            isConnected = 0;
-             NSLog(@"连接错误：%@",error);
-        }
-    }
+        [_clinetSocket disconnect];
+        isConnected=0;
+        _startBtn.titleLabel.text=@"连接";
+        [_startBtn setBackgroundColor:[UIColor lightGrayColor]];
+        [self showMessageWithStr:@"已断开连接"];
+    }else
+       // if([self isIP:IP]){
+        [_clinetSocket connectToHost:IP onPort:port withTimeout:-1 error:&error];
+       // }else{
+       //     [self showMessageWithStr:@"ip格式错误，请检查"];
+       // }
    
 }
 - (void)ready{
@@ -118,15 +145,12 @@ BOOL *isConnected;
     switch (mediaType) {
         case 0://照相机
         {
-            
-
             [self presentViewController:_imagePicker animated:YES completion:nil];
         }
             break;
             
         case 1://录像机 有BUG
         {
-
             _imagePicker.mediaTypes = @[(NSString *)kUTTypeVideo];
             _imagePicker.videoMaximumDuration =5;
             _imagePicker.cameraCaptureMode = UIImagePickerControllerCameraCaptureModeVideo;
@@ -155,7 +179,50 @@ BOOL *isConnected;
 - (void)showMessageWithStr:(NSString *)str{
     self.messageTF.text = [self.messageTF.text stringByAppendingFormat:@"%@\n", str];
 }
+- (BOOL)isIP:(NSString *)ipString{
+    
+    NSError *error = NULL;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)" options:NSRegularExpressionCaseInsensitive error:&error];
+    NSTextCheckingResult *result = [regex firstMatchInString:ipString options:0 range:NSMakeRange(0, [ipString length])];
+    return result;
+}
+-(void)sendImg:(UIImage *)img withChannel:(NSString *)channel{
+    NSData *data = UIImageJPEGRepresentation(img, 0.05);
+    channel =[channel stringByAppendingString:@".jpg"];
+    NSString *imageURl =[[NSString alloc]initWithFormat:@"%@%@%@",@"http://",IP,upLoadImg_url ];
+    //NSLog(@"%lu KB  %lld",[data length]/1024,[channel longLongValue]);
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json",
+                                                         
+                                                         @"text/html",
+                                                         
+                                                         @"image/jpeg",
+                                                         
+                                                         @"image/png",
+                                                         
+                                                         @"application/octet-stream",
+                                                         
+                                                         @"text/json",
+                                                         
+                                                         nil];
+    
+    manager.requestSerializer= [AFHTTPRequestSerializer serializer];
+    
+    manager.responseSerializer= [AFHTTPResponseSerializer serializer];
+    [manager POST:imageURl parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        
+        [formData appendPartWithFileData:data name:@"file" fileName:channel mimeType:@"image/jpg"];
+      
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nonnull responseObject) {
+        NSString *responseString = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+        NSLog(@"上传图像成功：%@", responseString);
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+           NSLog(@"上传图像失败：%@",error);
+    }];
 
+}
 #pragma mark-
 #pragma mark - UIImagePickerControllerDelegate
 
@@ -171,8 +238,10 @@ BOOL *isConnected;
         else{
             image = [info objectForKey:UIImagePickerControllerOriginalImage]; //不允许编辑，获取原图片
         }
-        channel=_channelTF.text;
-        [self uploadImage:image withChannel:channel];
+        channel=_channelLab.text;
+         [self sendImg:image withChannel:channel];
+         //[self uploadImage:image withChannel:channel];
+        
         //UIImageWriteToSavedPhotosAlbum(image,nil,nil, nil);
     }
     else if([type isEqualToString:(NSString *)kUTTypeVideo]){
@@ -191,42 +260,6 @@ BOOL *isConnected;
     [picker dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)uploadImage:(UIImage *)photo withChannel:(NSString *) channel
-{
-    
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    /*方式一：使用NSData数据流传图片*/
-    NSDictionary *param = @{@"channel":channel};
-    NSString *fileName = [[NSString alloc]initWithFormat:@"%@%@", channel,@".jpg" ];
-    NSString *imageURl =[[NSString alloc]initWithFormat:@"%@%@%@",@"http://",IP,upLoadImg_url ];
-    //imageURl =@"http://www.lswdz.cn/zsny/dp/imgSave.php";
-    //url 转码
-    //imageURl = [imageURl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-    
-    NSLog(@"channel:%@",channel);
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    manager.responseSerializer.acceptableContentTypes =[NSSet setWithObject:@"text/html"];
-
-    NSLog(@"上传图片接口：%@",imageURl);
-    [manager POST:imageURl parameters:param constructingBodyWithBlock:^(id formData) {
-        //UIImageJPEGRepresentation 第二个参数是图片质量压缩系数 如果数据太大，可以考虑改成0.8
-        NSData *data = UIImageJPEGRepresentation(photo, 0.6);
-        
-        NSLog(@"%lu KB",[data length]/1024);
-        if(data!=nil){
-            [formData appendPartWithFileData:data name:@"imgData" fileName:@"_Moment.jpg" mimeType:@"image/jpg"];
-            NSLog(@"开始上传图像");
-        }
-        
-    } success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        NSString *responseString = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
-        NSLog(@"上传图像成功：%@", responseString);
-        
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"上传图像失败：%@",error);
-    }];
-    
-}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
