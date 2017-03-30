@@ -23,7 +23,7 @@ PODS:
   - CocoaAsyncSocket (7.5.1):
     - CocoaAsyncSocket/GCD (= 7.5.1)
   - CocoaAsyncSocket/GCD (7.5.1)
-  - UMengAnalytics-NO-IDFA (4.2.5)
+  - SCRecorder (2.7.0)
   - YYKit (1.0.9):
     - YYKit/no-arc (= 1.0.9)
   - YYKit/no-arc (1.0.9)
@@ -31,15 +31,15 @@ PODS:
 DEPENDENCIES:
   - AFNetworking (~> 2.2)
   - CocoaAsyncSocket
-  - UMengAnalytics-NO-IDFA
+  - SCRecorder
   - YYKit
 
 SPEC CHECKSUMS:
   AFNetworking: cb8d14a848e831097108418f5d49217339d4eb60
   CocoaAsyncSocket: e0a7e93b2ffa411592ff87e58524fbbc9b95b4fa
-  UMengAnalytics-NO-IDFA: 16666e32edce5be44ae5b14aaaa7f3582e09d6ab
+  SCRecorder: bbb521dbc222908876ec9cd9156bbc8a893bed44
   YYKit: 7cda43304a8dc3696c449041e2cb3107b4e236e7
 
-PODFILE CHECKSUM: 10c8f943bb4582c5ad3c6cb8d8287e57a3c1bf23
+PODFILE CHECKSUM: 4a113722943863e81fa0959beaaca8d806736201
 
 COCOAPODS: 1.2.0

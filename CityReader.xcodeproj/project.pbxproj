@@ -8,6 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		4DA577320EA2AB160A268CDE /* Pods_CityReader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9D7952AA2F0C74FC7858E58 /* Pods_CityReader.framework */; };
+		884CF7611E8BEF3C002DE114 /* SCRecordSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 884CF7601E8BEF3C002DE114 /* SCRecordSessionManager.m */; };
+		884CF7631E8BF190002DE114 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 884CF7621E8BF190002DE114 /* CoreVideo.framework */; };
+		884CF7651E8BF1A8002DE114 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 884CF7641E8BF1A8002DE114 /* AudioToolbox.framework */; };
+		884CF7671E8BF1B9002DE114 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 884CF7661E8BF1B9002DE114 /* GLKit.framework */; };
+		884CF7711E8BF9E7002DE114 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 884CF7701E8BF9E7002DE114 /* Metal.framework */; };
+		884CF7741E8BFC57002DE114 /* TakeVideoVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 884CF7731E8BFC57002DE114 /* TakeVideoVC.m */; };
 		88EF5B9A1E57109B00ED9510 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 88EF5B991E57109B00ED9510 /* main.m */; };
 		88EF5B9D1E57109B00ED9510 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 88EF5B9C1E57109B00ED9510 /* AppDelegate.m */; };
 		88EF5BA01E57109B00ED9510 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88EF5B9F1E57109B00ED9510 /* ViewController.m */; };
@@ -37,6 +43,14 @@
 
 /* Begin PBXFileReference section */
 		6F6301ABB4207ECECC2267D3 /* Pods-CityReader.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CityReader.release.xcconfig"; path = "Pods/Target Support Files/Pods-CityReader/Pods-CityReader.release.xcconfig"; sourceTree = "<group>"; };
+		884CF75F1E8BEF3C002DE114 /* SCRecordSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCRecordSessionManager.h; sourceTree = "<group>"; };
+		884CF7601E8BEF3C002DE114 /* SCRecordSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCRecordSessionManager.m; sourceTree = "<group>"; };
+		884CF7621E8BF190002DE114 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		884CF7641E8BF1A8002DE114 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		884CF7661E8BF1B9002DE114 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		884CF7701E8BF9E7002DE114 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		884CF7721E8BFC57002DE114 /* TakeVideoVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TakeVideoVC.h; sourceTree = "<group>"; };
+		884CF7731E8BFC57002DE114 /* TakeVideoVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TakeVideoVC.m; sourceTree = "<group>"; };
 		88EF5B951E57109B00ED9510 /* CityReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CityReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		88EF5B991E57109B00ED9510 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		88EF5B9B1E57109B00ED9510 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -62,6 +76,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				884CF7711E8BF9E7002DE114 /* Metal.framework in Frameworks */,
+				884CF7671E8BF1B9002DE114 /* GLKit.framework in Frameworks */,
+				884CF7651E8BF1A8002DE114 /* AudioToolbox.framework in Frameworks */,
+				884CF7631E8BF190002DE114 /* CoreVideo.framework in Frameworks */,
 				4DA577320EA2AB160A268CDE /* Pods_CityReader.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -108,6 +126,8 @@
 		88EF5B971E57109B00ED9510 /* CityReader */ = {
 			isa = PBXGroup;
 			children = (
+				884CF7721E8BFC57002DE114 /* TakeVideoVC.h */,
+				884CF7731E8BFC57002DE114 /* TakeVideoVC.m */,
 				88EF5B9B1E57109B00ED9510 /* AppDelegate.h */,
 				88EF5B9C1E57109B00ED9510 /* AppDelegate.m */,
 				88EF5B9E1E57109B00ED9510 /* ViewController.h */,
@@ -124,6 +144,8 @@
 		88EF5B981E57109B00ED9510 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				884CF75F1E8BEF3C002DE114 /* SCRecordSessionManager.h */,
+				884CF7601E8BEF3C002DE114 /* SCRecordSessionManager.m */,
 				88EF5B991E57109B00ED9510 /* main.m */,
 			);
 			name = "Supporting Files";
@@ -159,6 +181,10 @@
 		FDAB63D2C06BA6B982A04C72 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				884CF7701E8BF9E7002DE114 /* Metal.framework */,
+				884CF7661E8BF1B9002DE114 /* GLKit.framework */,
+				884CF7641E8BF1A8002DE114 /* AudioToolbox.framework */,
+				884CF7621E8BF190002DE114 /* CoreVideo.framework */,
 				A9D7952AA2F0C74FC7858E58 /* Pods_CityReader.framework */,
 			);
 			name = Frameworks;
@@ -235,7 +261,7 @@
 					88EF5B941E57109B00ED9510 = {
 						CreatedOnToolsVersion = 8.2;
 						DevelopmentTeam = EM6L6FTE8B;
-						ProvisioningStyle = Manual;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -357,6 +383,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				88EF5BA01E57109B00ED9510 /* ViewController.m in Sources */,
+				884CF7741E8BFC57002DE114 /* TakeVideoVC.m in Sources */,
+				884CF7611E8BEF3C002DE114 /* SCRecordSessionManager.m in Sources */,
 				88EF5B9D1E57109B00ED9510 /* AppDelegate.m in Sources */,
 				88EF5B9A1E57109B00ED9510 /* main.m in Sources */,
 			);
@@ -509,12 +537,12 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = EM6L6FTE8B;
 				INFOPLIST_FILE = CityReader/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yishun;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "fc47ca4c-4375-43c7-bbe5-951b183890ff";
-				PROVISIONING_PROFILE_SPECIFIER = yishunD;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				USER_HEADER_SEARCH_PATHS = "$(PODS_ROOT)/**";
 			};
 			name = Debug;
@@ -527,12 +555,12 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = EM6L6FTE8B;
 				INFOPLIST_FILE = CityReader/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yishun;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "fc47ca4c-4375-43c7-bbe5-951b183890ff";
-				PROVISIONING_PROFILE_SPECIFIER = yishunD;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				USER_HEADER_SEARCH_PATHS = "$(PODS_ROOT)/**";
 			};
 			name = Release;

@@ -11,6 +11,8 @@
 #import "AFHTTPSessionManager.h"
 #import "GCDAsyncSocket.h"
 #import "YYKit.h"
+#import "SCRecorder.h"
+#import "TakeVideoVC.h"
 
 @interface ViewController ()
 //客户端socket
@@ -23,16 +25,18 @@
 @property (nonatomic) GCDAsyncSocket *clinetSocket;
 
 @property (nonatomic, retain) UIImagePickerController *imagePicker;
+@property (nonatomic,retain) TakeVideoVC *takeVideoVC;
 @property (weak, nonatomic) IBOutlet UIButton *startBtn;
 @property(nonatomic, strong) NSData *fileData;
 
 @end
-BOOL *onPhoto=0;
-BOOL *isConnected;
 NSString *IP;
 int i ;
+BOOL isConnected = 0;
+BOOL isReady=0;
+int mediaType=1 ;//0 拍照  1 第一个摄像头，录视频 2 最后一个摄像头，录视频
 @implementation ViewController
-    NSString *upLoadImg_url =@":50099/upload.html";
+    NSString *upLoadImg_url =@":12345/upload.html";
     NSString *channel;
     int port =3344;
 - (void)viewDidLoad {
@@ -40,9 +44,10 @@ int i ;
     [self initAPP];
     
 }
+
 -(void)initAPP{
     isConnected=0;
-    i =arc4random() % 50;
+    i =arc4random() % 40;
     [self showMessageWithStr:@"请确保和服务端电脑在同一网络"];
     //连接服务器
     _channelLab.clipsToBounds=YES;
@@ -52,6 +57,12 @@ int i ;
     _channelLab.text= [[NSString alloc] initWithFormat:@"%d",i];
     _clinetSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
     
+}
+- (IBAction)forceReady:(id)sender {
+    if(isConnected){
+        [self ready];
+        isReady = 1;
+    }
 }
 - (IBAction)subClick:(id)sender {
     if (i>1) {
@@ -68,12 +79,15 @@ int i ;
     
 }
 
+
+#pragma mark - GCDAsynSocket Delegate
+
 - (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(NSError *)err{
     if (err) {
         NSLog(@"%@",err);
     }
 }
-#pragma mark - GCDAsynSocket Delegate
+
 - (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port{
     NSData *welcome =[@"hello sever!" dataUsingEncoding:NSUTF8StringEncoding];
     [_clinetSocket writeData:welcome withTimeout:1000 tag:1];
@@ -96,12 +110,22 @@ int i ;
     [self showMessageWithStr:text];
     switch (ivalue) {
         case 111:
-            [self ready];
+            if (!isReady) {
+                [self ready];
+                isReady = 1;
+            }
             break;
         case 333:
-            [self.imagePicker dismissViewControllerAnimated:YES completion:nil];
+            if (isReady) {
+                [self pasue];
+                isReady = 0;
+            }
+            
         case 666:
-            [self.imagePicker takePicture];
+            if (isReady) {
+                [self startWorking];
+            }
+            break;
         default:
             break;
     }
@@ -133,27 +157,30 @@ int i ;
 }
 - (void)ready{
 
-    int mediaType=0;
-    _imagePicker = [[UIImagePickerController alloc] init];
-    _imagePicker.delegate = self;
-    _imagePicker.allowsEditing = NO;
     
-    _imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
-    _imagePicker.cameraFlashMode =UIImagePickerControllerCameraFlashModeOff;
-    _imagePicker.cameraViewTransform = CGAffineTransformMakeScale(1.7, 1.7);
-    _imagePicker.showsCameraControls  =NO;
+
     switch (mediaType) {
         case 0://照相机
-        {
+        {   _imagePicker = [[UIImagePickerController alloc] init];
+            _imagePicker.delegate = self;
+            _imagePicker.allowsEditing = NO;
+            _imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+            _imagePicker.cameraFlashMode =UIImagePickerControllerCameraFlashModeOff;
+            _imagePicker.cameraViewTransform = CGAffineTransformMakeScale(1.7, 1.7);
+            _imagePicker.showsCameraControls  =NO;
             [self presentViewController:_imagePicker animated:YES completion:nil];
         }
             break;
             
         case 1://录像机 有BUG
         {
-            _imagePicker.mediaTypes = @[(NSString *)kUTTypeVideo];
-            _imagePicker.videoMaximumDuration =5;
-            _imagePicker.cameraCaptureMode = UIImagePickerControllerCameraCaptureModeVideo;
+            _imagePicker = [[UIImagePickerController alloc] init];
+            _imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+            _imagePicker.mediaTypes = @[(NSString *)kUTTypeMovie];
+            _imagePicker.delegate = self;
+            _imagePicker.cameraViewTransform = CGAffineTransformMakeScale(1.7, 1.7);
+            //_imagePicker.showsCameraControls  =NO;
+            _imagePicker.videoQuality = UIImagePickerControllerQualityTypeHigh;
             [self presentViewController:_imagePicker animated:YES completion:nil];
         }
             break;
@@ -162,7 +189,24 @@ int i ;
     }
 
 }
+- (void)pasue{
+         [self.imagePicker dismissViewControllerAnimated:YES completion:nil];
+    }
 
+- (void)startWorking{
+    if (!mediaType) {
+        [self.imagePicker takePicture];
+    }else if(mediaType==1){
+        NSLog(@"开始录像");
+        [self.imagePicker startVideoCapture];
+        [self performSelector:@selector(stop) withObject:nil afterDelay:5.0f];
+        
+    }
+}
+-(void )stop{
+    [self.imagePicker stopVideoCapture];
+    NSLog(@"结束");
+}
 //发送消息
 - (IBAction)sendMessageAction:(id)sender {
     NSData *data = [self.messageTF.text dataUsingEncoding:NSUTF8StringEncoding];
@@ -227,7 +271,8 @@ int i ;
 #pragma mark - UIImagePickerControllerDelegate
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
-{
+{   NSLog(@"%@",info);
+
     NSString *type = [info objectForKey:UIImagePickerControllerMediaType];
     if ([type isEqualToString:(NSString *)kUTTypeImage]) {
         //图片保存和展示
@@ -240,19 +285,28 @@ int i ;
         }
         channel=_channelLab.text;
          [self sendImg:image withChannel:channel];
-         //[self uploadImage:image withChannel:channel];
         
-        //UIImageWriteToSavedPhotosAlbum(image,nil,nil, nil);
     }
     else if([type isEqualToString:(NSString *)kUTTypeVideo]){
         //视频保存后 播放视频
         NSURL *url = [info objectForKey:UIImagePickerControllerMediaURL];
+        NSLog(@"视频保存:%@",url);
         NSString *urlPath = [url path];
         if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(urlPath)) {
             UISaveVideoAtPathToSavedPhotosAlbum(urlPath, self, @selector(video:didFinishSavingWithError:contextInfo:), nil);
         }
     }
     
+}
+- (void)video:(NSString *)videoPath didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo{
+    if (error) {
+        NSLog(@"保存视频过程中发生错误，错误信息:%@",error.localizedDescription);
+    }else{
+        NSLog(@"视频保存成功.");
+        //录制完之后自动播放
+        NSURL *url=[NSURL fileURLWithPath:videoPath];
+        NSLog(@"%@",url);
+    }
 }
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
